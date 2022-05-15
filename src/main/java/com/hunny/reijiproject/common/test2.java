@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class test2 {
-
+private  int id;
     public void f()
     {
 
