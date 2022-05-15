@@ -30,6 +30,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
        registry.addInterceptor(employeeInterceptor).addPathPatterns("/**").excludePathPatterns(
                "/backend/**", "/front/**","/employee/login","/employee/logout","/user/login","/user/sendMsg"
+               ,"/welcome"
        );
     }
     @Override
