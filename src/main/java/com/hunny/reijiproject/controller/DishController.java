@@ -15,9 +15,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -35,6 +38,8 @@ public class DishController {
     DishFlavorService dishFlavorService;
     @Autowired
     CategoryService categoryService;
+    @Autowired
+    RedisTemplate redisTemplate;
 @PostMapping
     public R<String> save(@RequestBody DishDto dishDto)
     {
@@ -120,15 +125,35 @@ public class DishController {
 //       List<Dish>list= dishService.list(lambdaQueryWrapper);
 //        return R.success(list);
 //    }
+    /**
+       先从缓存中查询数据，如果不存在则查询数据库，然后将数据存到缓存中
+     * @param dish
+     * @return com.hunny.reijiproject.common.R<java.util.List<com.hunny.reijiproject.DTO.DishDto>>
+     * @author QiuZhengJie
+
+     */
 
     @GetMapping("/list")
     public R<List<DishDto>> list(Dish dish)
     {
+        String key="dish_"+dish.getCategoryId();
+        List<DishDto> dishDtoList=null;
+
+
+        Optional o=Optional.ofNullable(redisTemplate.opsForValue().get(key));
+
+
+        if(o.isPresent()
+        )
+        {
+            dishDtoList= (List<DishDto>) o.get();
+            return R.success(dishDtoList);
+        }
         LambdaQueryWrapper<Dish>lambdaQueryWrapper=new LambdaQueryWrapper<>();
         lambdaQueryWrapper.eq(dish.getCategoryId()!=null,Dish::getCategoryId,dish.getCategoryId());
         lambdaQueryWrapper.orderByAsc(Dish::getSort).orderByDesc(Dish::getUpdateTime);
         List<Dish>list= dishService.list(lambdaQueryWrapper);
-        List<DishDto> dishDtoList=list.stream().map((e)->{
+        dishDtoList=list.stream().map((e)->{
             DishDto dishDto=new DishDto();
             BeanUtils.copyProperties(e,dishDto);
             Long cateId=e.getCategoryId();
@@ -145,6 +170,7 @@ public class DishController {
          dishDto.setFlavors(flavorList);
          return dishDto;
         }).collect(Collectors.toList());
+        redisTemplate.opsForValue().set(key,dishDtoList,60, TimeUnit.MINUTES);
         return R.success(dishDtoList);
     }
 

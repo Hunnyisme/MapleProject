@@ -2,6 +2,7 @@ package com.hunny.reijiproject.config;
 
 import com.hunny.reijiproject.common.JacksonObjectMapper;
 import com.hunny.reijiproject.interceptor.EmployeeInterceptor;
+import com.hunny.reijiproject.interceptor.UserInterceptor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -25,13 +26,19 @@ public class WebMvcConfig implements WebMvcConfigurer {
     EmployeeInterceptor employeeInterceptor;
     @Autowired
     JacksonObjectMapper jacksonObjectMapper;
+    @Autowired
+    UserInterceptor userInterceptor;
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
 
        registry.addInterceptor(employeeInterceptor).addPathPatterns("/**").excludePathPatterns(
                "/backend/**", "/front/**","/employee/login","/employee/logout","/user/login","/user/sendMsg"
-               ,"/welcome"
+               ,"/welcome","/welcome2"
        );
+//           registry.addInterceptor(userInterceptor).addPathPatterns("/**").excludePathPatterns(
+//                   "/backend/**", "/front/**","/employee/login","/employee/logout","/user/login","/user/sendMsg"
+//                   ,"/welcome","/welcome2"
+//           );
     }
     @Override
     public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
