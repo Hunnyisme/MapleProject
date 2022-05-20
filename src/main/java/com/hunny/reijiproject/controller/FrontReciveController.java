@@ -16,6 +16,6 @@ public class FrontReciveController {
     @RequestMapping("/welcome2")
     public void showLogin(HttpServletRequest request, HttpServletResponse response)throws Exception
     {
-        response.sendRedirect("/front/index.html");
+        response.sendRedirect("front/index.html");
     }
 }
