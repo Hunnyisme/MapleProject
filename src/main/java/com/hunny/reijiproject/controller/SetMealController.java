@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -87,7 +88,7 @@ public class SetMealController {
 
         }
         /**
-           根据条件查询套餐数据
+           根据条件查询套餐数据,来自用户端的请求，获取菜品分类对应的套餐
          * @param setmeal
          * @return com.hunny.reijiproject.common.R<java.util.List<com.hunny.reijiproject.entity.Setmeal>>
          * @author QiuZhengJie
@@ -101,5 +102,25 @@ public class SetMealController {
           lambdaQueryWrapper.eq(setmeal.getStatus()!=null,Setmeal::getStatus,setmeal.getStatus());
 
           return R.success(setmealService.list(lambdaQueryWrapper));
+        }
+    //http://localhost/setmeal/status/0?ids=1525338681046736897
+   /**
+    更改套餐状态信息，起售改为停售
+    * @param ids
+    * @return com.hunny.reijiproject.common.R<java.lang.String>
+    * @author QiuZhengJie
+
+    */
+    @PostMapping("/status/0")
+        public R<String> updateStatus(Long ids)
+        {
+//          Long ids=setmeal.getCategoryId();
+
+          LambdaQueryWrapper<Setmeal>lambdaQueryWrapper=new LambdaQueryWrapper<>();
+          lambdaQueryWrapper.eq(Setmeal::getId,ids);
+          Setmeal setmeal1=setmealService.getOne(lambdaQueryWrapper);
+             setmeal1.setStatus(0);
+             setmealService.updateById(setmeal1);
+             return R.success("状态修改成功");
         }
 }
