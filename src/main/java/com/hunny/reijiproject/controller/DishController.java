@@ -44,11 +44,12 @@ public class DishController {
     public R<String> save(@RequestBody DishDto dishDto)
     {
         dishService.saveWithFlavor(dishDto);
-
+         String key="dish_"+dishDto.getCategoryId();
+         redisTemplate.delete(key);
         return R.success("新增菜品成功");
     }
     /**
-       菜品信息分页查询
+       菜品信息分页查询(后端）
      * @param page 当前页
      * @param pageSize 一页有多少记录
      * @param name  模糊搜索名
@@ -106,16 +107,18 @@ public class DishController {
     public R<String> update(@RequestBody DishDto dishDto)
     {
         dishService.updateWithFlavor(dishDto);
+String key="dish_"+dishDto.getCategoryId();
+redisTemplate.delete(key);
 
         return R.success("修改菜品成功");
     }
-    /**
-       根据分类id查询菜品数据
-     * @param dish
-     * @return com.hunny.reijiproject.common.R<java.util.List<com.hunny.reijiproject.entity.Dish>>
-     * @author QiuZhengJie
-
-     */
+//    /**
+//       根据分类id查询菜品数据
+//     * @param dish
+//     * @return com.hunny.reijiproject.common.R<java.util.List<com.hunny.reijiproject.entity.Dish>>
+//     * @author QiuZhengJie
+//
+//     */
 //    @GetMapping("/list")
 //    public R<List<Dish>> list(Dish dish)
 //    {
@@ -126,13 +129,13 @@ public class DishController {
 //        return R.success(list);
 //    }
     /**
-       先从缓存中查询数据，如果不存在则查询数据库，然后将数据存到缓存中
+     根据分类id查询菜品数据，
+     先从缓存中查询数据，如果不存在则查询数据库，然后将数据存到缓存中
      * @param dish
      * @return com.hunny.reijiproject.common.R<java.util.List<com.hunny.reijiproject.DTO.DishDto>>
      * @author QiuZhengJie
 
      */
-
     @GetMapping("/list")
     public R<List<DishDto>> list(Dish dish)
     {
