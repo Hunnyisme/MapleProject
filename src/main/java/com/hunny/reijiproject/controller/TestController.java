@@ -12,7 +12,8 @@ public class TestController {
     @RequestMapping("/test")
     public String f1()
     {
-        return "/backend/index.html";
+        return "backend/index.html";
+
     }
 
 

@@ -18,7 +18,9 @@ public class BackendReciveController {
     @RequestMapping("/welcome")
     public void showLogin(HttpServletRequest request, HttpServletResponse response)throws Exception
     {
+
         response.sendRedirect("/backend/index.html");
+
     }
 
 }
